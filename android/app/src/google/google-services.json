@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "686132205451",
+    "project_id": "exolve-demo",
+    "storage_bucket": "exolve-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686132205451:android:4dd323989f74c8dcf1018e",
+        "android_client_info": {
+          "package_name": "com.exolve.demoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "686132205451-bsnc8vhcnlg1rvp9fa188erh3b1h7gl8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1jcMoYPCJ0pLbV8Kg7vvBj0cnX-w2RyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "686132205451-bsnc8vhcnlg1rvp9fa188erh3b1h7gl8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

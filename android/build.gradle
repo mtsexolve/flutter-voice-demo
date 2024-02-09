@@ -1,0 +1,50 @@
+buildscript {
+
+    ext.kotlin_version = '1.7.20'
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://developer.huawei.com/repo/' }
+    }
+
+    dependencies {
+        if (getGradle().getStartParameter().getTaskRequests().toString().contains("Huawei") and !(getGradle().getStartParameter().getTaskRequests().toString().contains("Google"))) {
+            classpath("com.huawei.agconnect:agcp:1.9.1.300")
+            println("init huawei dependencies")
+        } else  if (getGradle().getStartParameter().getTaskRequests().toString().contains("Google") and !(getGradle().getStartParameter().getTaskRequests().toString().contains("Huawei"))){
+            classpath 'com.google.gms:google-services:4.3.15'
+            println("init google dependencies")
+        }
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://developer.huawei.com/repo/' }
+
+        maven {
+            url = uri("https://maven.pkg.github.com/mtsexolve/mobile-voice-sdk")
+            credentials {
+                username = project.findProperty('gpr.user')
+                password = project.findProperty('gpr.key')
+            }
+        }
+
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

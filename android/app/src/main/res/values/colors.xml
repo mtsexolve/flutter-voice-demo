@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="dark_violet">#9700CC</color>
+    <color name="mts_red">#E30611</color>
+    <color name="grey">#9e9e9e</color>
+    <color name="mts_grey">#AEB5BD</color>
+    <color name="mts_text_grey">#626C77</color>
+    <color name="mts_bg_grey">#F2F3F7</color>
+    <color name="call_card_number_text">#1D2023</color>
+    <color name="call_card_button_accept_mts_green">#26CD58</color>
+    <color name="call_control_button_mts">#1D2023</color>
+</resources>

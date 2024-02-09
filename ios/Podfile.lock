@@ -1,0 +1,78 @@
+PODS:
+  - exolve_voice_sdk (0.0.6):
+    - ExolveVoiceSDK (= 1.0.10)
+    - Flutter
+  - ExolveVoiceSDK (1.0.10)
+  - Flutter (1.0.0)
+  - flutter_native_contact_picker (0.0.1):
+    - Flutter
+  - fluttertoast (0.0.2):
+    - Flutter
+    - Toast
+  - package_info_plus (0.4.5):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.1.1):
+    - Flutter
+  - share_plus (0.0.1):
+    - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - Toast (4.1.0)
+
+DEPENDENCIES:
+  - exolve_voice_sdk (from `.symlinks/plugins/exolve_voice_sdk/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_native_contact_picker (from `.symlinks/plugins/flutter_native_contact_picker/ios`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - share_plus (from `.symlinks/plugins/share_plus/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+
+SPEC REPOS:
+  https://github.com/mtsexolve/ios-voicesdk-pods/:
+    - ExolveVoiceSDK
+  trunk:
+    - Toast
+
+EXTERNAL SOURCES:
+  exolve_voice_sdk:
+    :path: ".symlinks/plugins/exolve_voice_sdk/ios"
+  Flutter:
+    :path: Flutter
+  flutter_native_contact_picker:
+    :path: ".symlinks/plugins/flutter_native_contact_picker/ios"
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  share_plus:
+    :path: ".symlinks/plugins/share_plus/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+
+SPEC CHECKSUMS:
+  exolve_voice_sdk: f3049d804fbeb9871fa2c6cefa64a30a714b05ae
+  ExolveVoiceSDK: 3581f3bf961660be35a71d8907a545d1199543bb
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_native_contact_picker: bd430ba0fbf82768bb50c2c52a69a65759a8f907
+  fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
+  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
+  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  share_plus: 599aa54e4ea31d4b4c0e9c911bcc26c55e791028
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  Toast: ec33c32b8688982cecc6348adeae667c1b9938da
+
+PODFILE CHECKSUM: 8a575ddb24a37ba1f1aba7a26e7af56b10b2c9ed
+
+COCOAPODS: 1.12.1

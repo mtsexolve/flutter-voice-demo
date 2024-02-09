@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>destination</key>
+	<string>export</string>
+	<key>method</key>
+	<string>ad-hoc</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.exolve.demoapp</key>
+		<string>exolve_demoapp_adhoc</string>
+	</dict>
+	<key>signingCertificate</key>
+	<string>37FA66682C123B95E69188679C428C7AC9D8D998</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>stripSwiftSymbols</key>
+	<true/>
+	<key>teamID</key>
+	<string>KL42TSU837</string>
+	<key>uploadSymbols</key>
+	<false/>
+</dict>
+</plist>

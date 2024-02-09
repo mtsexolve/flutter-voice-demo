@@ -1,0 +1,21 @@
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <application tools:node="merge">
+        <service
+            android:name="com.example.flutter_voice_example.ExolveMessageService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT"/>
+            </intent-filter>
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/launch_background" />
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/mts_red" />
+        </service>
+        <meta-data
+            android:name="push_kit_auto_init_enabled"
+            android:value="true" />
+    </application>
+</manifest>
