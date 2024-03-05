@@ -49,6 +49,7 @@ class Settings extends StatelessWidget {
               ),
               const Spacer(),
               _pushTokenFrame(context: context, token: state.pushToken),
+              _versionInfoLabel(context: context, sdkVersionDescriprion: state.sdkVersionDescriprion),
               _sendLogsButton(context: context),
             ]
           );
@@ -129,6 +130,34 @@ class Settings extends StatelessWidget {
           )
         )
       ]
+    );
+  }
+
+  Widget _versionInfoLabel({required BuildContext context,required  String? sdkVersionDescriprion}) {
+    return Row(
+        children: [
+          Builder(
+              builder: (BuildContext context) {
+                if (sdkVersionDescriprion == null) {
+                  return Container();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8,
+                  ),
+                  child: Text('${sdkVersionDescriprion}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'mtswide',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                )
+                );
+              }
+          )
+        ]
     );
   }
 

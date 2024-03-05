@@ -1,4 +1,5 @@
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
+import 'package:exolve_voice_sdk/communicator/version_info.dart';
 import 'package:exolve_voice_sdk/call/call_event.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
@@ -25,6 +26,10 @@ interface class ITelecomManager {
 
   Future<RegistrationState> getRegistrationState() {
     throw UnimplementedError('getRegistrationState() has not been implemented.');
+  }
+
+  Future<VersionInfo> getVersionInfo() async {
+    throw UnimplementedError('getVersionInfo() has not been implemented.');
   }
 
   Future<void> register({required Account account}) async {

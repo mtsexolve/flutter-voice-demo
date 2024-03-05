@@ -5,6 +5,7 @@ import 'package:exolve_voice_sdk/communicator/call_client.dart';
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
+import 'package:exolve_voice_sdk/communicator/version_info.dart';
 import 'package:flutter_voice_example/core/store/account_repository.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager_interface.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
@@ -83,6 +84,12 @@ class TelecomManager implements ITelecomManager {
     final calls = await callClient.getCallList();
     calls?.forEach((element) {updateCallList(call: element);});
     log('TelecomManager: initializeCallClient: getCallList = $calls');
+  }
+
+  @override
+  Future<VersionInfo> getVersionInfo() async {
+    log('TelecomManager: getVersionInfo');
+    return callClient.getVersionInfo();
   }
 
   @override

@@ -24,6 +24,12 @@ class AccountDataIsLoadedEvent extends SettingsEvent {
   AccountDataIsLoadedEvent({required this.data});
 }
 
+class VersionInfoLoadedEvent extends SettingsEvent {
+  final String data;
+  VersionInfoLoadedEvent({required this.data});
+}
+
+
 class TextFieldChangedEvent extends SettingsEvent {
   final String name;
   final String inputText;

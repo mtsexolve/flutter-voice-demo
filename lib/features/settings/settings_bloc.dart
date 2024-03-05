@@ -34,6 +34,16 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
           : log("SettingsBloc: getAccountUseCase when bloc starts: account is empty ");
     });
 
+    telecomManager.getVersionInfo().then((versionInfo) {
+      log("SettingsBloc: getVersionInfo when bloc starts");
+      add(VersionInfoLoadedEvent(data: 'SDK ver.${versionInfo.buildVersion} env:${(versionInfo.environment.isNotEmpty)? versionInfo.environment : "default"}'));
+    });
+
+    on<VersionInfoLoadedEvent>((event,emit) async {
+      log("SettingsBloc: VersionInfoLoadedEvent when bloc starts");
+      emit(SettingsState.copy(copied: state, sdkVersionDescriprion: event.data));
+    });
+
     on<AccountDataIsLoadedEvent>((event,emit) async {
       log("SettingsBloc: AccountDataIsLoadedEvent when bloc starts: ");
       emit(SettingsState.copy(copied: state, login: event.data.login, password: event.data.password));
