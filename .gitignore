@@ -42,3 +42,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# .lock files
+# We don't need this level of control in a demo app
+Podfile.lock
+pubspec.lock
+

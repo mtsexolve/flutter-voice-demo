@@ -28,8 +28,14 @@ void main() async {
         logConfiguration: LogConfiguration(logLevel: LogLevel.debug),
         enableSipTrace: true,
         enableNotifications: true,
+        enableSecureConnection: false,
         callKitConfiguration: CallKitConfiguration(
           includeInRecents: true,
+          notifyInForeground: false,
+          dtmfEnabled: false
+        ),
+        androidNotificationConfiguration: AndroidNotificationConfiguration(
+          enableRingtone: false
         )
       )
   ).then((value) {
