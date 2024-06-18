@@ -1,16 +1,22 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:exolve_voice_sdk/call/call_event.dart';
+import 'package:exolve_voice_sdk/call/call_pending_event.dart';
+import 'package:exolve_voice_sdk/call/call_user_action.dart';
 import 'package:exolve_voice_sdk/communicator/call_client.dart';
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
 import 'package:exolve_voice_sdk/communicator/version_info.dart';
 import 'package:flutter_voice_example/core/store/account_repository.dart';
+import 'package:flutter_voice_example/core/store/settings_repository.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager_interface.dart';
+import 'package:flutter_voice_example/features/utils/request_permission.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../models/account.dart';
+import '../models/settings.dart';
 
 class TelecomManager implements ITelecomManager {
 
@@ -108,11 +114,11 @@ class TelecomManager implements ITelecomManager {
     callClient.unregister();
   }
 
-    @override
-    Future<void> makeCall({required String number}) async {
-      log('TelecomManager: makeCall to number = $number');
-      callClient.makeCall(number: number);
-    }
+  @override
+  Future<void> makeCall({required String number}) async {
+    log('TelecomManager: makeCall to number = $number');
+    callClient.makeCall(number: number);
+  }
 
   @override
   Stream<RegistrationEvent>? subscribeOnRegistrationEvents() {
@@ -142,6 +148,18 @@ class TelecomManager implements ITelecomManager {
     if (event is CallDisconnectedEvent) {
       log('TelecomManager: handleCallEvent: disconnected');
       removeCallFromList(call: event.call);
+      return;
+    }
+
+    if(event is CallUserActionRequiredEvent){
+      log('TelecomManager: handleCallEvent: user action required');
+      if (event.userAction == CallUserAction.needsLocationAccess && event.pendingEvent == CallPendingEvent.acceptCall) {
+        requestPermission(Permission.locationWhenInUse).then((status){
+          event.call.accept();
+        });
+      } else if (event.userAction == CallUserAction.enableLocationProvider && event.pendingEvent == CallPendingEvent.acceptCall) {
+        event.call.accept();
+      }
       return;
     }
 
@@ -264,6 +282,16 @@ class TelecomManager implements ITelecomManager {
   @override
   saveAccount(Account account) {
     AccountRepository.saveAccount(account);
+  }
+  
+  @override
+  Future<Settings> getSettings() {
+    return SettingsRepository.getSettings();
+  }
+
+  @override
+  saveSettings(Settings settings) {
+    SettingsRepository.saveSettings(settings);
   }
 
   @override

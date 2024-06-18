@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,41 +7,47 @@ import 'package:flutter_voice_example/core/telecom/telecom_manager.dart';
 import 'package:flutter_voice_example/features/dialer/dialer_bloc.dart';
 import 'package:flutter_voice_example/features/settings/settings_bloc.dart';
 import 'package:flutter_voice_example/features/selector/selector_bloc.dart';
-import 'package:provider/provider.dart';
 import 'constants/colors_mts.dart';
 import 'constants/strings_mts.dart';
 import 'features/bottom_navigation/bottom_navigation_bloc.dart';
 import 'features/call/call_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_voice_example/features/selector/selector.dart';
+import 'package:provider/provider.dart';
+
 
 void main() async {
-
+  
   WidgetsFlutterBinding.ensureInitialized();
   if(await Permission.notification.isDenied) {
-    Permission.notification.request();
+    await Permission.notification.request();
   }
   if(await Permission.microphone.isDenied) {
-    Permission.microphone.request();
+    await Permission.microphone.request();
   }
 
- TelecomManager().initializeCallClient(
-      configuration: Configuration(
-        logConfiguration: LogConfiguration(logLevel: LogLevel.debug),
-        enableSipTrace: true,
-        enableNotifications: true,
-        enableSecureConnection: false,
-        callKitConfiguration: CallKitConfiguration(
-          includeInRecents: true,
-          notifyInForeground: false,
-          dtmfEnabled: false
-        ),
-        androidNotificationConfiguration: AndroidNotificationConfiguration(
-          enableRingtone: false
+
+  TelecomManager().getSettings().then((settings) {
+    log("main: App settings loaded");
+    TelecomManager().initializeCallClient(
+        configuration: Configuration(
+          logConfiguration: LogConfiguration(logLevel: LogLevel.debug),
+          enableSipTrace: true,
+          enableNotifications: true,
+          enableSecureConnection: false,
+          enableDetectCallLocation: settings.isDetectCallLocationEnabled,
+          callKitConfiguration: CallKitConfiguration(
+            includeInRecents: true,
+            notifyInForeground: false,
+            dtmfEnabled: false
+          ),
+          androidNotificationConfiguration: AndroidNotificationConfiguration(
+            enableRingtone: settings.isRingtoneEnabled
+          )
         )
-      )
-  ).then((value) {
-    runApp(const MyApp());
+    ).then((value) {
+      runApp(const MyApp());
+    });
   });
 
 }

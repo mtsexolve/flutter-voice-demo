@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_voice_example/features/utils/request_permission.dart';
 import 'package:meta/meta.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../core/telecom/telecom_manager_interface.dart';
 
 part 'dialer_event.dart';
@@ -44,8 +46,20 @@ class DialerBloc extends Bloc<DialerEvent, DialerState> {
   }
 
   _call(String number) {
-    telecomManager.makeCall(number: number);
-    log('dialerBloc: call($number)');
+    if(number.isEmpty){
+      return;
+    }
+
+    telecomManager.getSettings().then((settings) {
+      if(settings.isDetectCallLocationEnabled){
+        requestPermission(Permission.locationWhenInUse).then((status){
+          telecomManager.makeCall(number: number);
+        });
+      } else {
+        telecomManager.makeCall(number: number);
+      }
+      log('dialerBloc: call($number)');
+    });
   }
 
 }

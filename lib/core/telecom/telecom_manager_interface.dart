@@ -5,6 +5,7 @@ import 'package:exolve_voice_sdk/call/call.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
 import '../models/account.dart';
+import '../models/settings.dart';
 
 interface class ITelecomManager {
 
@@ -46,6 +47,14 @@ interface class ITelecomManager {
 
   Future<Account?> getAccount() async {
     throw UnimplementedError('getAccount() has not been implemented.');
+  }
+
+  saveSettings(Settings settings) async {
+    throw UnimplementedError('saveSettings() has not been implemented.');
+  }
+
+  Future<Settings> getSettings() async {
+    throw UnimplementedError('getSettings() has not been implemented.');
   }
 
   Future<void> makeCall({required String number}) async {

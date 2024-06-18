@@ -12,4 +12,6 @@ class StringsMts {
   static const settingsSendLogs = "Send logs";
   static const dialerBackToCall = "Back to call";
   static const shareNoFiles = "No files to share";
+  static const callLocationSwitchLabel = "Call location";
+  static const ringtoneSwitchLabel = "Ringtone";
 }

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../../constants/colors_mts.dart';
 import '../../constants/strings_mts.dart';
 import '../../core/common_ui/data_field.dart';
+import '../../core/common_ui/switch_styled.dart';
 
 class Settings extends StatelessWidget {
   const Settings({
@@ -47,6 +49,7 @@ class Settings extends StatelessWidget {
                 activateEvent: ActivateSipAccountEvent(),
                 deactivateEvent: DeactivateAccountEvent(),
               ),
+              _optionsSwitchBlock(context: context),
               const Spacer(),
               _pushTokenFrame(context: context, token: state.pushToken),
               _versionInfoLabel(context: context, sdkVersionDescriprion: state.sdkVersionDescriprion),
@@ -86,6 +89,30 @@ class Settings extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _optionsSwitchBlock({required BuildContext context}) {
+    return Row(
+        children: [
+          SwitchStyled(
+            labelText:StringsMts.callLocationSwitchLabel,
+            onChanged: (bool enabled){
+              context.read<SettingsBloc>().add(SettingsDetectCallLocationEvent(enabled: enabled));
+            },
+            value: context.read<SettingsBloc>().state.isDetectCallLocationEnabled,
+          ),
+          Visibility(
+            visible: Platform.isAndroid,
+            child: SwitchStyled(
+              labelText:StringsMts.ringtoneSwitchLabel,
+              onChanged: (bool enabled){
+                context.read<SettingsBloc>().add(SettingsRingtoneEvent(enabled: enabled));
+              },
+              value: context.read<SettingsBloc>().state.isRingtoneEnabled ,
+            ),
+          )
+        ]
     );
   }
 

@@ -45,3 +45,13 @@ class PushTokenEvent extends SettingsEvent{
   final String pushToken;
   PushTokenEvent({required this.pushToken});
 }
+
+class SettingsDetectCallLocationEvent extends SettingsEvent{
+  final bool enabled;
+  SettingsDetectCallLocationEvent({required this.enabled});
+}
+
+class SettingsRingtoneEvent extends SettingsEvent{
+  final bool enabled;
+  SettingsRingtoneEvent({required this.enabled});
+}

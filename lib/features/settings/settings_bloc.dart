@@ -6,11 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
+import 'package:exolve_voice_sdk/communicator/configuration_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager_interface.dart';
 import 'package:flutter_voice_example/features/utils/registration_mapper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../core/models/account.dart';
+import '../../core/models/settings.dart';
 import '../../core/share/share_provider.dart';
 import 'package:flutter_voice_example/constants/keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +25,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final ITelecomManager telecomManager;
   StreamSubscription<RegistrationEvent>? _registrationSubscription;
   StreamSubscription<String>? _pushTokenSubscription;
+  final ConfigurationManager configurationManager = ConfigurationManager();
 
   SettingsBloc({required this.telecomManager})
       : super(const SettingsState.initial("", ""))
@@ -32,6 +35,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       log("SettingsBloc: getAccountUseCase when bloc starts");
       account != null ? add(AccountDataIsLoadedEvent(data: account))
           : log("SettingsBloc: getAccountUseCase when bloc starts: account is empty ");
+    });
+
+    telecomManager.getSettings().then((settings) {
+      log("SettingsBloc: getSettingsUseCase when bloc starts");
+      add(SettingsDetectCallLocationEvent(enabled: settings.isDetectCallLocationEnabled));
+      add(SettingsRingtoneEvent(enabled: settings.isRingtoneEnabled));
     });
 
     telecomManager.getVersionInfo().then((versionInfo) {
@@ -93,12 +102,32 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       _shareLogs(event.context);
     });
 
+    on<SettingsDetectCallLocationEvent>((event, emit) async {
+      telecomManager.saveSettings(Settings(
+        isRingtoneEnabled:  state.isRingtoneEnabled,
+        isDetectCallLocationEnabled: event.enabled
+      ));
+      configurationManager.setDetectCallLocationEnabled(event.enabled);
+      emit(SettingsState.copy(copied: state, isDetectCallLocationEnabled: event.enabled));
+    });
+
+    on<SettingsRingtoneEvent>((event, emit) async {
+      telecomManager.saveSettings(Settings(
+        isRingtoneEnabled: event.enabled,
+        isDetectCallLocationEnabled: state.isDetectCallLocationEnabled
+      ));
+      configurationManager.setAndroidRingtoneEnabled(event.enabled);
+      emit(SettingsState.copy(copied: state, isRingtoneEnabled: event.enabled));
+    });
+
     on<TextFieldChangedEvent>((event, emit) async {
       emit(SettingsState(
         registrationState: state.registrationState,
         pushToken: state.pushToken,
         login: event.name == "login" ? event.inputText : state.login,
         password: event.name == "password" ? event.inputText : state.password,
+        isRingtoneEnabled: state.isRingtoneEnabled,
+        isDetectCallLocationEnabled: state.isDetectCallLocationEnabled
       ));
     });
 
@@ -114,10 +143,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       }
     });
 
-    _retrievePushToken();
+    _retrieveVoipPushToken();
   } // SettingsBloc constructor
 
-  Future<void> _retrievePushToken() async {
+  Future<void> _retrieveVoipPushToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.reload();
     final token = prefs.getString(Keys.tokenPreferencesKey) ?? "";

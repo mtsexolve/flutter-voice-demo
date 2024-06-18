@@ -1,7 +1,10 @@
+import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_voice_example/core/models/settings.dart';
 import 'package:flutter_voice_example/features/dialer/dialer_bloc.dart';
+import 'package:flutter_voice_example/features/settings/settings_bloc.dart';
 
 import '../../core/common_ui/dial_keyboard.dart';
 
@@ -54,7 +57,12 @@ class Dialer extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   child:
                   IconButton(
-                    onPressed: () {context.read<DialerBloc>().add(CreateCallEvent());},
+                    onPressed: () {
+                      if(context.read<SettingsBloc>().state.registrationState!=RegistrationState.registered) {
+                        return;
+                      }
+                      context.read<DialerBloc>().add(CreateCallEvent());
+                    },
                     icon: SvgPicture.asset(
                       'assets/images/ic_btn_call.svg',
                       fit: BoxFit.fill,
