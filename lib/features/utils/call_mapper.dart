@@ -6,13 +6,14 @@ import 'package:exolve_voice_sdk/call/call.dart';
 class CallMapper {
   static CallItemState toPresenter({ required Call mappied, }) {
     log("CallMapper: toPresenter: mappied call = ${mappied.toString()}, id = ${mappied.id}"
-        "\n  number = ${mappied.number}, active = ${mappied.callState == CallState.connected} \n"
+        "\n  number = ${mappied.number}, formattedNumber = ${mappied.formattedNumber}, active = ${mappied.callState == CallState.connected} \n"
         " muted = ${mappied.isMuted}"
         " isOut = ${mappied.isOutDirection} \n  isInCOnf = ${mappied.isInConference}"
         " callstate = ${mappied.callState}");
     return CallItemState(
       callId: mappied.id ?? "none",
       number: mappied.number ?? "none",
+      formattedNumber: mappied.formattedNumber ?? "none",
       active: mappied.callState == CallState.connected,
       muted: mappied.isMuted ?? false,
       isOutDirection: mappied.isOutDirection ?? false,

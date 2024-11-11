@@ -7,6 +7,8 @@ import 'package:exolve_voice_sdk/communicator/call_client.dart';
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
+import 'package:exolve_voice_sdk/communicator/audioroute/audioroute.dart';
+import 'package:exolve_voice_sdk/communicator/audioroute/audioroute_event.dart';
 import 'package:exolve_voice_sdk/communicator/version_info.dart';
 import 'package:flutter_voice_example/core/store/account_repository.dart';
 import 'package:flutter_voice_example/core/store/settings_repository.dart';
@@ -24,13 +26,16 @@ class TelecomManager implements ITelecomManager {
   final StreamController<CallEvent> _callStreamController = StreamController<CallEvent>();
   final StreamController<RegistrationEvent> _registrationStreamController = StreamController<RegistrationEvent>();
   final StreamController<String> _pushTokenStreamController = StreamController<String>();
+  final StreamController<AudioRouteEvent> _audioRouteStreamController = StreamController<AudioRouteEvent>();
   Stream<CallEvent>? _callsStream;
   Stream<RegistrationEvent>? _registrationStream;
   Stream<String>? _pushTokenStream;
+  Stream<AudioRouteEvent>? _audioRoutesStream;
   final List<Call> _calls = [];
   StreamSubscription<CallEvent>? callsSubscription;
   StreamSubscription<RegistrationEvent>? registrationSubscription;
   StreamSubscription<String>? pushTokenSubscription;
+  StreamSubscription<AudioRouteEvent>? audioRoutesSubscription;
 
   static final TelecomManager _instance = TelecomManager.initial();
   factory TelecomManager() {
@@ -42,6 +47,7 @@ class TelecomManager implements ITelecomManager {
     configureSubscriptionOnCallsEvents();
     configureSubscriptionOnRegistrationEvents();
     configureSubscriptionOnPushTokenEvents();
+    configureSubscriptionOnAudioRoutesEvents();
   }
 
   void configureSubscriptionOnRegistrationEvents() {
@@ -75,6 +81,17 @@ class TelecomManager implements ITelecomManager {
             _callStreamController.sink.add(event);
           });
     _callsStream ??= _callStreamController.stream.asBroadcastStream();
+  }
+
+  void configureSubscriptionOnAudioRoutesEvents() {
+    audioRoutesSubscription ??= callClient
+        .subscribeOnAudioRouteEvents()
+        .listen((event) {
+            log(
+                'TelecomManager: configureSubscriptionOnAudioRoutesEvents: listen: receive event = $event');
+            _audioRouteStreamController.sink.add(event);
+          });
+    _audioRoutesStream ??= _audioRouteStreamController.stream.asBroadcastStream();
   }
 
   @override
@@ -136,6 +153,12 @@ class TelecomManager implements ITelecomManager {
   Stream<CallEvent>? subscribeOnCallEvents() {
     log('TelecomManager: subscribeOnCallEvents');
     return _callsStream;
+  }
+
+  @override
+  Stream<AudioRouteEvent>? subscribeOnAudioRouteEvents() {
+    log('TelecomManager: subscribeOnAudioRouteEvents');
+    return _audioRoutesStream;
   }
 
   void handleCallEvent(CallEvent event) {
@@ -265,9 +288,15 @@ class TelecomManager implements ITelecomManager {
   }
 
   @override
-  Future<void> setSpeaker({required bool setSpeakerOn}) async {
-    log('TelecomManager: setSpeaker: setSpeakerOn: $setSpeakerOn');
-    return callClient.setSpeaker(setSpeakerOn: setSpeakerOn);
+  Future<void> setAudioRoute({required AudioRoute audioRoute}) async {
+    log('TelecomManager: setAudioRoute: setAudioRoute: $audioRoute');
+    return callClient.setAudioRoute(audioRoute: audioRoute);
+  }
+
+  @override
+  Future<List<AudioRouteData>?> getAudioRoutes() async {
+    log('TelecomManager:  getAudioRoutes = ${callClient.getAudioRoutes()}');
+    return await callClient.getAudioRoutes();
   }
 
   void destroy() {

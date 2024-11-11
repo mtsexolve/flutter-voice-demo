@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,9 @@ void main() async {
   if(await Permission.microphone.isDenied) {
     await Permission.microphone.request();
   }
+  if(Platform.isAndroid && await Permission.phone.isDenied) {
+    await Permission.phone.request();
+  }
 
 
   TelecomManager().getSettings().then((settings) {
@@ -36,9 +40,10 @@ void main() async {
           enableNotifications: true,
           enableSecureConnection: false,
           enableDetectCallLocation: settings.isDetectCallLocationEnabled,
+          androidTelecomIntegrationMode:  AndroidTelecomIntegrationMode.selfManagedService,
           callKitConfiguration: CallKitConfiguration(
             includeInRecents: true,
-            notifyInForeground: false,
+            notifyInForeground: true,
             dtmfEnabled: false
           ),
           androidNotificationConfiguration: AndroidNotificationConfiguration(

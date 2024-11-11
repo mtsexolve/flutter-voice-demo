@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exolve_voice_sdk/call/call_state.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:flutter_native_contact_picker/model/contact.dart';
 import 'package:flutter_voice_example/core/common_ui/event_handler.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager_interface.dart';
 import 'package:flutter_voice_example/features/utils/call_mapper.dart';
+import 'package:exolve_voice_sdk/communicator/audioroute/audioroute.dart';
+import 'package:exolve_voice_sdk/communicator/audioroute/audioroute_event.dart';
 import 'package:exolve_voice_sdk/call/call_event.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -16,6 +20,7 @@ part 'call_state.dart';
 class CallBloc extends Bloc<Event, CallScreenState> {
   final ITelecomManager telecomManager;
   StreamSubscription<CallEvent>? _eventSubscription;
+  StreamSubscription<AudioRouteEvent>? _audioRouteEventSubscription;
 
   CallBloc({required this.telecomManager})
     : super(CallScreenState(
@@ -29,6 +34,19 @@ class CallBloc extends Bloc<Event, CallScreenState> {
     on<TelecomEvent>((event, emit) {_onTelecomEvent(event.event, emit);});
     _eventSubscription = telecomManager.subscribeOnCallEvents()?.listen((event) {
       add(TelecomEvent(event: event));
+    });
+    _audioRouteEventSubscription = telecomManager.subscribeOnAudioRouteEvents()?.listen((event) {
+      log("call_bloc: subscribeOnAudioRouteEvents");
+      if(event is AudioRouteChangedEvent){
+        for(var i = 0; i < event.routes.length; i++){
+          log('call_bloc: subscribeOnAudioRouteEvents: ${event.routes[i].route} ${event.routes[i].name} ${event.routes[i].isActive}');
+          if(event.routes[i].route == AudioRoute.speaker){
+            if(event.routes[i].isActive != state.speaker){
+              add(SpeakerScreenEvent(state: state));
+            }
+          }
+        }
+      }
     });
   }
 
@@ -54,6 +72,10 @@ class CallBloc extends Bloc<Event, CallScreenState> {
               ? (event.call.id == state.selectedCallId ? "" : state.enteredDtmfSequence)
               : state.enteredDtmfSequence),
     ));
+    // Fix speaker state on IOS
+    if(Platform.isIOS && (event is CallNewEvent || event is CallConnectedEvent || event is CallOnHoldEvent)){
+      telecomManager.setAudioRoute(audioRoute: state.speaker ? AudioRoute.speaker : AudioRoute.earpiece );
+    }
     log('call_bloc: onTelecomEvent: after emit: state.list =${state.calls} emitter=${emitter.hashCode}');
   }
 
@@ -78,6 +100,7 @@ class CallBloc extends Bloc<Event, CallScreenState> {
   @override
   Future<void> close() {
     _eventSubscription?.cancel();
+    _audioRouteEventSubscription?.cancel();
     log('close hash = ${super.hashCode}');
     return super.close();
   }

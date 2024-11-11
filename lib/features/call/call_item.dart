@@ -34,7 +34,7 @@ class CallItem extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          _getStateIcon(state.calls[index].active == true),
+                          _getStateIcon(state.calls[index].callState),
                           Expanded(
                               flex: 2, // 20%
                               child: Column(
@@ -47,10 +47,11 @@ class CallItem extends StatelessWidget {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           _getTerminateButton(index),
-                                          state.calls[index].callState != CallState.newCall
-                                              ?_getHoldResumeButton(index, state, context)
-                                              : (state.calls[index].isOutDirection
-                                                ? const SizedBox() : _getAcceptButton(index)) ,
+                                          switch (state.calls[index].callState) {
+                                            CallState.newCall => (state.calls[index].isOutDirection ? const SizedBox() : _getAcceptButton(index)),
+                                            CallState.connectionLost => const SizedBox(),
+                                            _ => _getHoldResumeButton(index, state, context),
+                                          },
                                         ]
                                     )
                                   ]
@@ -66,9 +67,13 @@ class CallItem extends StatelessWidget {
   }
 }
 
-StatelessWidget _getStateIcon(bool active) {
+StatelessWidget _getStateIcon(CallState callState) {
   return Icon(
-    active ? CupertinoIcons.play_fill : CupertinoIcons.pause_fill,
+    switch (callState) {
+      CallState.connected => CupertinoIcons.play_fill,
+      CallState.connectionLost => CupertinoIcons.wifi_slash,
+      _ => CupertinoIcons.pause_fill,
+    },
     color: ColorsMts.grey,
     size: 50
   );
@@ -83,7 +88,7 @@ Widget _getCallNumberRow(int index) {
           bottom: 0
       ),
       child: BlocBuilder<CallBloc, CallScreenState>(builder: (context, state) {
-        return Text(state.calls[index].number,
+        return Text(state.calls[index].formattedNumber,
           textAlign: TextAlign.left,
           style: const TextStyle(
             fontFamily: 'mtswide',

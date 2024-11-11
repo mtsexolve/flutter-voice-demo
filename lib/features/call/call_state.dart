@@ -4,6 +4,7 @@ class CallItemState {
 
   final String callId;
   final String number;
+  final String formattedNumber;
   final bool? active;
   final bool muted;
   final bool isOutDirection;
@@ -13,6 +14,7 @@ class CallItemState {
   const CallItemState({
     required this.callId,
     required this.number,
+    required this.formattedNumber,
     required this.active,
     required this.muted,
     required this.isOutDirection,
@@ -24,6 +26,7 @@ class CallItemState {
       required CallItemState copied,
       String? callId,
       String? number,
+      String? formattedNumber,
       bool? active,
       bool? muted,
       bool? isInConference,
@@ -31,6 +34,7 @@ class CallItemState {
       CallState? callState,
     }) : callId = callId ?? copied.callId,
       number = number ?? copied.number,
+      formattedNumber = formattedNumber ?? copied.formattedNumber,
       active = active ?? copied.active,
       muted = muted ?? copied.muted,
       isOutDirection = isOutDirection ?? copied.isOutDirection,

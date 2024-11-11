@@ -122,8 +122,9 @@ class SpeakerScreenEvent extends ScreenEvent {
   @override
   handle() {
     log("call_event: SpeakerScreenEvent: emitter = ${emitter.hashCode}");
-    emitter!(CallScreenState.copy(copied: state, speaker: !state.speaker, selectedCallId: state.selectedCallId));
-    TelecomManager().setSpeaker(setSpeakerOn: !state.speaker);
+    final newSpeakerState = !state.speaker;
+    emitter!(CallScreenState.copy(copied: state, speaker: newSpeakerState, selectedCallId: state.selectedCallId));
+    TelecomManager().setAudioRoute(audioRoute: newSpeakerState ? AudioRoute.speaker : AudioRoute.earpiece );
   }
 }
 
@@ -145,7 +146,7 @@ class TransferButtonClickedEvent extends ScreenEvent {
     final status =  await Permission.contacts.request();
     if(status.isGranted){
       log("call_event: TransferEvent: contact permissions is granted");
-      Contact? contact = await FlutterContactPicker().selectContact();
+      Contact? contact = await FlutterNativeContactPicker().selectContact();
       TelecomManager().transfer(
           callId: state.selectedCallId ?? "",
           targetNumber: contact?.phoneNumbers?.first.replaceAll(RegExp(r'[^0-9]'),'') ?? "none"

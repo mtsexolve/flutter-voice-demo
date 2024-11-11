@@ -1,8 +1,8 @@
 PODS:
-  - exolve_voice_sdk (1.0.7):
-    - ExolveVoiceSDK (= 1.0.10)
+  - exolve_voice_sdk (1.6.0):
+    - ExolveVoiceSDK (= 1.6.1)
     - Flutter
-  - ExolveVoiceSDK (1.0.10)
+  - ExolveVoiceSDK (1.6.1)
   - Flutter (1.0.0)
   - flutter_native_contact_picker (0.0.1):
     - Flutter
@@ -14,14 +14,14 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - permission_handler_apple (9.1.1):
+  - permission_handler_apple (9.3.0):
     - Flutter
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - Toast (4.1.0)
+  - Toast (4.1.1)
 
 DEPENDENCIES:
   - exolve_voice_sdk (from `.symlinks/plugins/exolve_voice_sdk/ios`)
@@ -61,18 +61,18 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
-  exolve_voice_sdk: ed5c45b89895291ae6a2edd9cec25e4fa11e0c2a
-  ExolveVoiceSDK: 3581f3bf961660be35a71d8907a545d1199543bb
+  exolve_voice_sdk: b61f287b639721c621bb10673a55d23871bcde7d
+  ExolveVoiceSDK: e59322615c41ecd657f8fad5cabc858ab76cf3e4
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_native_contact_picker: bd430ba0fbf82768bb50c2c52a69a65759a8f907
-  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
-  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
+  flutter_native_contact_picker: 390f08cc44058386ee91499f05360d647dddfc66
+  fluttertoast: e9a18c7be5413da53898f660530c56f35edfba9c
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
-  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
-  share_plus: 599aa54e4ea31d4b4c0e9c911bcc26c55e791028
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
-  Toast: ec33c32b8688982cecc6348adeae667c1b9938da
+  Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
 
-PODFILE CHECKSUM: 8a575ddb24a37ba1f1aba7a26e7af56b10b2c9ed
+PODFILE CHECKSUM: eec6d85170d82510002f992be1eab1840699826b
 
 COCOAPODS: 1.15.2

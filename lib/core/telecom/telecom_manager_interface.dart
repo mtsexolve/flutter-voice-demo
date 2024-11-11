@@ -4,6 +4,8 @@ import 'package:exolve_voice_sdk/call/call_event.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_state.dart';
+import 'package:exolve_voice_sdk/communicator/audioroute/audioroute.dart';
+import 'package:exolve_voice_sdk/communicator/audioroute/audioroute_event.dart';
 import '../models/account.dart';
 import '../models/settings.dart';
 
@@ -23,6 +25,10 @@ interface class ITelecomManager {
 
   Stream<CallEvent>? subscribeOnCallEvents() {
     throw UnimplementedError('subscribeOnCallEvents() has not been implemented.');
+  }
+
+  Stream<AudioRouteEvent>? subscribeOnAudioRouteEvents() {
+    throw UnimplementedError('subscribeOnAudioRouteEvents() has not been implemented.');
   }
 
   Future<RegistrationState> getRegistrationState() {
@@ -105,8 +111,12 @@ interface class ITelecomManager {
     throw UnimplementedError('unMute() has not been implemented.');
   }
 
-  Future<void> setSpeaker({required bool setSpeakerOn }) async {
-    throw UnimplementedError('setSpeaker() has not been implemented.');
+  Future<void> setAudioRoute({required AudioRoute audioRoute}) {
+    throw UnimplementedError('setAudioRoute() has not been implemented.');
+  }
+
+  Future<List<AudioRouteData>?> getAudioRoutes() async {
+    throw UnimplementedError('getAudioRoutes() has not been implemented.');
   }
 
   List<Call> getCalls() {
