@@ -4,7 +4,7 @@ import 'package:flutter_voice_example/features/call/call_bloc.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
 
 class CallMapper {
-  static CallItemState toPresenter({ required Call mappied, }) {
+  static CallItemState toPresenter({ required Call mappied , CallItemState? oldState }) {
     log("CallMapper: toPresenter: mappied call = ${mappied.toString()}, id = ${mappied.id}"
         "\n  number = ${mappied.number}, formattedNumber = ${mappied.formattedNumber}, active = ${mappied.callState == CallState.connected} \n"
         " muted = ${mappied.isMuted}"
@@ -19,6 +19,8 @@ class CallMapper {
       isOutDirection: mappied.isOutDirection ?? false,
       isInConference: mappied.isInConference ?? false,
       callState: mappied.callState ?? CallState.error,
+      startTime: oldState != null ? oldState.startTime : -1,
+      qualityRating: oldState != null ? oldState.qualityRating : -1,
     );
 
   }

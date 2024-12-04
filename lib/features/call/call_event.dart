@@ -246,6 +246,39 @@ class AcceptScreenEvent extends ScreenEvent {
   }
 }
 
+class TimerScreenEvent extends ScreenEvent {
+  @override
+  Emitter<CallScreenState>? emitter;
+  final CallScreenState state;
+  TimerScreenEvent({required this.state});
+
+  @override
+  setEmitter(Emitter<CallScreenState> emitter) {
+    this.emitter = emitter;
+  }
+
+  @override
+  handle() async {
+    log("call_event: TimerScreenEvent");
+    var futures = <Future>[];
+    for (var call in state.calls) {
+      futures.add(TelecomManager().getStatistics(callId: call.callId));
+    }
+    var stats = await Future.wait(futures);
+    var calls = <CallItemState>[];
+    for (var i = 0; i < stats.length; i++) {
+      if (stats[i] == null) {
+        calls.add(CallItemState.copy(copied: state.calls[i]));
+      } else {
+        calls.add(CallItemState.copy(
+            copied: state.calls[i], qualityRating: stats[i].currentRating));
+      }
+    }
+    emitter!(CallScreenState.copy(
+        copied: state, selectedCallId: state.selectedCallId, calls: calls));
+  }
+}
+
 class TelecomEvent implements Event{
   final CallEvent event;
   TelecomEvent({required this.event}) {

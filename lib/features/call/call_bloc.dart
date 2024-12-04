@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:exolve_voice_sdk/call/call_statistics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exolve_voice_sdk/call/call_state.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
@@ -21,6 +22,7 @@ class CallBloc extends Bloc<Event, CallScreenState> {
   final ITelecomManager telecomManager;
   StreamSubscription<CallEvent>? _eventSubscription;
   StreamSubscription<AudioRouteEvent>? _audioRouteEventSubscription;
+  Timer? _everySecond;
 
   CallBloc({required this.telecomManager})
     : super(CallScreenState(
@@ -30,7 +32,7 @@ class CallBloc extends Bloc<Event, CallScreenState> {
       dtmfKeyboardState: DtmfKeyboardState.inactive,
       enteredDtmfSequence: ""
     )) {
-    on<ScreenEvent>((event, emit) {event..setEmitter(emit)..handle();});
+    on<ScreenEvent>((event, emit) async { event.setEmitter(emit); await event.handle();});
     on<TelecomEvent>((event, emit) {_onTelecomEvent(event.event, emit);});
     _eventSubscription = telecomManager.subscribeOnCallEvents()?.listen((event) {
       add(TelecomEvent(event: event));
@@ -47,6 +49,10 @@ class CallBloc extends Bloc<Event, CallScreenState> {
           }
         }
       }
+    });
+
+    _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      add(TimerScreenEvent(state: state));
     });
   }
 
@@ -84,14 +90,15 @@ class CallBloc extends Bloc<Event, CallScreenState> {
     if (event is CallDisconnectedEvent || event is CallErrorEvent) {
       newList.removeWhere((element) => element.callId == event.call.id);
     } else {
-      state.calls.indexWhere((element) => element.callId == event.call.id) != -1
-          ? (){
-        final replaceableIndex =
-            newList.indexWhere((element) => element.callId == event.call.id);
-        newList[replaceableIndex] = CallMapper.toPresenter(mappied: event.call);
-        }() : (){
-          newList.add(CallMapper.toPresenter(mappied: event.call));
-        }();
+      final replaceableIndex = state.calls.indexWhere((element) => element.callId == event.call.id);
+      if( replaceableIndex != -1 ) {
+        newList[replaceableIndex] = CallMapper.toPresenter(mappied: event.call,oldState: newList[replaceableIndex]);
+        if( event is CallConnectedEvent && newList[replaceableIndex].startTime < 0 ) {
+          newList[replaceableIndex] = CallItemState.copy(copied: newList[replaceableIndex], startTime: DateTime.now().millisecondsSinceEpoch);
+        }
+      } else {
+        newList.add(CallMapper.toPresenter(mappied: event.call));
+      }
     }
     log('call_bloc: onTelecomEvent: updateCallsList: after update ${newList.toString()}');
     return newList;
@@ -101,6 +108,7 @@ class CallBloc extends Bloc<Event, CallScreenState> {
   Future<void> close() {
     _eventSubscription?.cancel();
     _audioRouteEventSubscription?.cancel();
+    _everySecond?.cancel();
     log('close hash = ${super.hashCode}');
     return super.close();
   }

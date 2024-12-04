@@ -10,6 +10,7 @@ import 'package:exolve_voice_sdk/communicator/registration/registration_state.da
 import 'package:exolve_voice_sdk/communicator/audioroute/audioroute.dart';
 import 'package:exolve_voice_sdk/communicator/audioroute/audioroute_event.dart';
 import 'package:exolve_voice_sdk/communicator/version_info.dart';
+import 'package:exolve_voice_sdk/call/call_statistics.dart';
 import 'package:flutter_voice_example/core/store/account_repository.dart';
 import 'package:flutter_voice_example/core/store/settings_repository.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager_interface.dart';
@@ -243,6 +244,12 @@ class TelecomManager implements ITelecomManager {
     log('TelecomManager: handleCallEvent: send dtmf for call $callId and sequence = $sequence \n'
         'position in list is ${_calls.firstWhere((element) => element.id == callId)}');
     _calls.firstWhere((element) => element.id == callId).sendDtmf(sequence: sequence);
+  }
+
+  @override
+  Future<CallStatistics?> getStatistics({required String callId}) async {
+    log('TelecomManager: handleCallEvent: get statistics for $callId \n');
+    return _calls.firstWhere((element) => element.id == callId).getStatistics();
   }
 
   @override

@@ -10,6 +10,8 @@ class CallItemState {
   final bool isOutDirection;
   final bool isInConference;
   final CallState callState;
+  final int startTime;
+  final double qualityRating;
 
   const CallItemState({
     required this.callId,
@@ -20,6 +22,8 @@ class CallItemState {
     required this.isOutDirection,
     required this.isInConference,
     required this.callState,
+    required this.startTime,
+    required this.qualityRating,
   });
 
   CallItemState.copy({
@@ -32,6 +36,8 @@ class CallItemState {
       bool? isInConference,
       bool? isOutDirection,
       CallState? callState,
+      int? startTime,
+      double? qualityRating,
     }) : callId = callId ?? copied.callId,
       number = number ?? copied.number,
       formattedNumber = formattedNumber ?? copied.formattedNumber,
@@ -39,8 +45,9 @@ class CallItemState {
       muted = muted ?? copied.muted,
       isOutDirection = isOutDirection ?? copied.isOutDirection,
       isInConference = isInConference ?? copied.isInConference,
-      callState = callState ?? copied.callState;
-
+      callState = callState ?? copied.callState,
+      startTime = startTime ?? copied.startTime,
+      qualityRating = qualityRating ?? copied.qualityRating;
 }
 
 class CallScreenState {

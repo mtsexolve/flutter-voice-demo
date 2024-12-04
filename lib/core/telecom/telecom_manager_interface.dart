@@ -1,5 +1,6 @@
 import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:exolve_voice_sdk/communicator/version_info.dart';
+import 'package:exolve_voice_sdk/call/call_statistics.dart';
 import 'package:exolve_voice_sdk/call/call_event.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
 import 'package:exolve_voice_sdk/communicator/registration/registration_event.dart';
@@ -89,6 +90,10 @@ interface class ITelecomManager {
 
   Future<void> sendDtmf({required String callId, required String sequence,}) async {
     throw UnimplementedError('sendDtmf() has not been implemented.');
+  }
+
+  Future<CallStatistics?> getStatistics({required String callId}) async {
+    throw UnimplementedError('getStatistics() has not been implemented.');
   }
 
   Future<void> createConference({required String callId, required String otherCallId}) async {
