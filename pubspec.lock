@@ -93,10 +93,10 @@ packages:
     dependency: "direct main"
     description:
       name: exolve_voice_sdk
-      sha256: d4ea4f04a5afb08cc667bf5330ef1a58d97fa27bf72a7309533fcad6f652e8e8
+      sha256: "3cca5bf2e308d7926a02d95db950d6ecd17df07dde919eeb1f37e9437c634be9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.0"
+    version: "1.9.2"
   fake_async:
     dependency: transitive
     description:

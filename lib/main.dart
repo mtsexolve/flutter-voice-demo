@@ -41,9 +41,9 @@ void main() async {
           enableSecureConnection: false,
           enableDetectCallLocation: settings.isDetectCallLocationEnabled,
           androidTelecomIntegrationMode:  AndroidTelecomIntegrationMode.selfManagedService,
+          notifyInForeground: true,
           callKitConfiguration: CallKitConfiguration(
             includeInRecents: true,
-            notifyInForeground: true,
             dtmfEnabled: false
           ),
           androidNotificationConfiguration: AndroidNotificationConfiguration(

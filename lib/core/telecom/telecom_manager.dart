@@ -170,7 +170,7 @@ class TelecomManager implements ITelecomManager {
     }
 
     if (event is CallDisconnectedEvent) {
-      log('TelecomManager: handleCallEvent: disconnected');
+      log('TelecomManager: handleCallEvent: disconnected duration = ${event.duration} isDisconnectedByUser = ${event.isDisconnectedByUser}');
       removeCallFromList(call: event.call);
       return;
     }

@@ -270,6 +270,14 @@ class TimerScreenEvent extends ScreenEvent {
       if (stats[i] == null) {
         calls.add(CallItemState.copy(copied: state.calls[i]));
       } else {
+        log("call_event: TimerScreenEvent ${state.calls[i]} Call stats." +
+            "maxRating = ${stats[i].maxRating} " +
+            "minRating = ${stats[i].minRating} " +
+            "averageRating = ${stats[i].averageRating} " +
+            "currentRating = ${stats[i].currentRating} " +
+            "sentPackets = ${stats[i].sentPackets} " +
+            "receivedPackets = ${stats[i].receivedPackets} " +
+            "lostPackets = ${stats[i].lostPackets} ");
         calls.add(CallItemState.copy(
             copied: state.calls[i], qualityRating: stats[i].currentRating));
       }
