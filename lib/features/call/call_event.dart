@@ -4,6 +4,8 @@ abstract class Event {}
 
 abstract class ScreenEvent implements ScreenEventHandler<CallScreenState>, Event{}
 
+
+
 class UnMuteScreenEvent extends ScreenEvent {
   @override
   Emitter<CallScreenState>? emitter;
@@ -81,21 +83,21 @@ class DtmfKeyboardKeyPressedEvent extends ScreenEvent {
   }
 }
 
-class DtmfKeyboardStateChangedEvent extends ScreenEvent {
+class CallScreenViewChangedEvent extends ScreenEvent {
   CallScreenState state;
-  DtmfKeyboardState dtmfKeyboardState;
-  DtmfKeyboardStateChangedEvent({required this.state, required this.dtmfKeyboardState});
+  CallScreenView callScreenView;
+  CallScreenViewChangedEvent({required this.state, required this.callScreenView});
   @override
   Emitter<CallScreenState>? emitter;
 
   @override
   handle() {
-    log("call_event: Dtmf state is = $dtmfKeyboardState, current state is ${state.dtmfKeyboardState}, emitter = ${emitter.hashCode}");
-    //emitter!(CallScreenState.copy(copied: state, selectedCallId: state.selectedCallId, dtmfKeyboardState: dtmfKeyboardState));
+    log("call_event: CallScreenViewChangedEvent state is = $callScreenView, current state is ${state.callScreenView}, emitter = ${emitter.hashCode}");
+    //emitter!(CallScreenState.copy(copied: state, selectedCallId: state.selectedCallId, callScreenView: callScreenView));
     emitter!(CallScreenState.copy(
         copied: state,
         selectedCallId: state.selectedCallId,
-        dtmfKeyboardState: dtmfKeyboardState,
+        callScreenView: callScreenView,
         enteredDtmfSequence: ""
     ));
 
@@ -108,11 +110,14 @@ class DtmfKeyboardStateChangedEvent extends ScreenEvent {
 
 }
 
-class SpeakerScreenEvent extends ScreenEvent {
+class LoadChangedAudioRoutes extends Event {}
+
+class AudioRouteChangedScreenEvent extends ScreenEvent {
   @override
   Emitter<CallScreenState>? emitter;
   final CallScreenState state;
-  SpeakerScreenEvent({required this.state});
+  final String name;
+  AudioRouteChangedScreenEvent({required this.state, required this.name});
 
   @override
   setEmitter(Emitter<CallScreenState> emitter) {
@@ -121,36 +126,12 @@ class SpeakerScreenEvent extends ScreenEvent {
 
   @override
   handle() {
-    log("call_event: SpeakerScreenEvent: emitter = ${emitter.hashCode}");
-    final newSpeakerState = !state.speaker;
-    emitter!(CallScreenState.copy(copied: state, speaker: newSpeakerState, selectedCallId: state.selectedCallId));
-    TelecomManager().setAudioRoute(audioRoute: newSpeakerState ? AudioRoute.speaker : AudioRoute.earpiece );
-  }
-}
-
-class TransferButtonClickedEvent extends ScreenEvent {
-  final CallScreenState state;
-  TransferButtonClickedEvent({required this.state});
-
-  @override
-  Emitter<CallScreenState>? emitter;
-
-  @override
-  setEmitter(Emitter<CallScreenState> emitter) {
-    this.emitter = emitter;
-  }
-
-  @override
-  handle() async {
-    log("call_event: TransferEvent:");
-    final status =  await Permission.contacts.request();
-    if(status.isGranted){
-      log("call_event: TransferEvent: contact permissions is granted");
-      Contact? contact = await FlutterNativeContactPicker().selectContact();
-      TelecomManager().transfer(
-          callId: state.selectedCallId ?? "",
-          targetNumber: contact?.phoneNumbers?.first.replaceAll(RegExp(r'[^0-9]'),'') ?? "none"
-      );
+    log("call_event: AudioRouteChangedScreenEvent: emitter = ${emitter.hashCode}");
+    if (state.audioRoutes != null) {
+      final index = state.audioRoutes!.indexWhere((audioRouteData) => audioRouteData.name == name);
+      if (index >= 0) {
+        TelecomManager().setAudioRoute(audioRouteData: state.audioRoutes![index]);
+      }
     }
   }
 }

@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:math' as math;
+import 'package:exolve_voice_sdk/call/call_disconnect_reason.dart';
 import 'package:exolve_voice_sdk/call/call_event.dart';
 import 'package:exolve_voice_sdk/call/call_pending_event.dart';
 import 'package:exolve_voice_sdk/call/call_user_action.dart';
@@ -17,6 +20,11 @@ import 'package:flutter_voice_example/core/telecom/telecom_manager_interface.dar
 import 'package:flutter_voice_example/features/utils/request_permission.dart';
 import 'package:exolve_voice_sdk/call/call.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+
+import 'package:flutter_voice_example/core/notification/notification_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 
 import '../models/account.dart';
 import '../models/settings.dart';
@@ -162,6 +170,20 @@ class TelecomManager implements ITelecomManager {
     return _audioRoutesStream;
   }
 
+  Future<void> showMissedCallNotification({required String formattedNumber}) async {
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+      DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true
+      );
+
+    const NotificationDetails notificationDetails =
+        NotificationDetails(iOS: iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        math.Random().nextInt(1000000000), 'Missed call', 'Missed call from $formattedNumber', notificationDetails);
+  }
+
   void handleCallEvent(CallEvent event) {
     if (event is CallErrorEvent) {
       log('TelecomManager: handleCallEvent: error');
@@ -170,7 +192,14 @@ class TelecomManager implements ITelecomManager {
     }
 
     if (event is CallDisconnectedEvent) {
-      log('TelecomManager: handleCallEvent: disconnected duration = ${event.duration} isDisconnectedByUser = ${event.isDisconnectedByUser}');
+      log('TelecomManager: handleCallEvent: disconnected duration = ${event.duration} disconnectReason = ${event.disconnectReason}');
+
+      if(Platform.isIOS) {
+        if(event.call.isOutDirection == false &&  event.call.formattedNumber!= null && event.duration == 0 && event.disconnectReason == CallDisconnectReason.endedByPeer) {
+          showMissedCallNotification(formattedNumber:event.call.formattedNumber!);
+        }
+      }
+
       removeCallFromList(call: event.call);
       return;
     }
@@ -295,9 +324,9 @@ class TelecomManager implements ITelecomManager {
   }
 
   @override
-  Future<void> setAudioRoute({required AudioRoute audioRoute}) async {
-    log('TelecomManager: setAudioRoute: setAudioRoute: $audioRoute');
-    return callClient.setAudioRoute(audioRoute: audioRoute);
+  Future<void> setAudioRoute({required AudioRouteData audioRouteData}) async {
+    log('TelecomManager: setAudioRoute: setAudioRoute: $audioRouteData');
+    return callClient.setAudioRoute(audioRouteData: audioRouteData);
   }
 
   @override

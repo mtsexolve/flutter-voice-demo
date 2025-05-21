@@ -5,6 +5,8 @@ import 'package:flutter_voice_example/features/utils/request_permission.dart';
 import 'package:meta/meta.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../core/telecom/telecom_manager_interface.dart';
+import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:flutter_native_contact_picker/model/contact.dart';
 
 part 'dialer_event.dart';
 part 'dialer_state.dart';
@@ -19,6 +21,8 @@ class DialerBloc extends Bloc<DialerEvent, DialerState> {
     on<RemoveDigitEvent>((event, emit) {_removeDigitFromEnteredNumber(emit);});
     on<RemoveAllDigitsEvent>((event, emit) {_removeAllDigitsFromEnteredNumber(emit);});
     on<CreateCallEvent>((event, emit) {_call(state.enteredNumber);});
+    on<TransferCallEvent>((event, emit) {_transfer(event.callId, state.enteredNumber);});
+    on<ContactPickerClickedEvent>((event, emit) async { event.setEmitter(emit); await event.handle();});
   }
 
   _addDigitToEnteredNumber(String digit, Emitter emit) {
@@ -51,7 +55,7 @@ class DialerBloc extends Bloc<DialerEvent, DialerState> {
     }
 
     telecomManager.getSettings().then((settings) {
-      if(settings.isDetectCallLocationEnabled){
+      if(settings.isDetectLocationEnabled){
         requestPermission(Permission.locationWhenInUse).then((status){
           telecomManager.makeCall(number: number);
         });
@@ -62,4 +66,16 @@ class DialerBloc extends Bloc<DialerEvent, DialerState> {
     });
   }
 
+  _transfer(String callId, String number) {
+    if (callId.isEmpty || number.isEmpty) {
+      return;
+    }
+
+    telecomManager.transfer(
+      callId: callId,
+      targetNumber: number
+    );
+
+    log('dialerBloc: transfer($number)');
+  }
 }

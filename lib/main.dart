@@ -5,8 +5,9 @@ import 'package:exolve_voice_sdk/communicator/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_voice_example/core/telecom/telecom_manager.dart';
-import 'package:flutter_voice_example/features/dialer/dialer_bloc.dart';
+import 'package:flutter_voice_example/features/dialer/dialer_bloc_manager.dart';
 import 'package:flutter_voice_example/features/settings/settings_bloc.dart';
+import 'package:flutter_voice_example/features/account/account_bloc.dart';
 import 'package:flutter_voice_example/features/selector/selector_bloc.dart';
 import 'constants/colors_mts.dart';
 import 'constants/strings_mts.dart';
@@ -15,11 +16,14 @@ import 'features/call/call_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_voice_example/features/selector/selector.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_voice_example/core/notification/notification_service.dart';
 
 
 void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
+
   if(await Permission.notification.isDenied) {
     await Permission.notification.request();
   }
@@ -31,6 +35,35 @@ void main() async {
   }
 
 
+
+  final DarwinInitializationSettings initializationSettingsDarwin =
+      DarwinInitializationSettings(
+    requestSoundPermission: false,
+    requestBadgePermission: false,
+    requestAlertPermission: false,
+  );
+
+  final AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+      iOS: initializationSettingsDarwin,
+      android: initializationSettingsAndroid);
+
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) {}
+  );
+
+  final bool? result = await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>()
+      ?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+      );
+
   TelecomManager().getSettings().then((settings) {
     log("main: App settings loaded");
     TelecomManager().initializeCallClient(
@@ -39,7 +72,7 @@ void main() async {
           enableSipTrace: true,
           enableNotifications: true,
           enableSecureConnection: false,
-          enableDetectCallLocation: settings.isDetectCallLocationEnabled,
+          enableDetectLocation: settings.isDetectLocationEnabled,
           androidTelecomIntegrationMode:  AndroidTelecomIntegrationMode.selfManagedService,
           notifyInForeground: true,
           callKitConfiguration: CallKitConfiguration(
@@ -123,8 +156,12 @@ class MyApp extends StatelessWidget {
           Provider<SettingsBloc>(
             create: (_) => SettingsBloc(telecomManager: TelecomManager()),
           ),
-          Provider<DialerBloc>(
-              create: (_) => DialerBloc(telecomManager: TelecomManager())
+          Provider<AccountBloc>(
+            create: (_) => AccountBloc(telecomManager: TelecomManager()),
+          ),
+          Provider<DialerBlocManager>(
+              create: (_) => DialerBlocManager(),
+              dispose: (_, manager) => manager.dispose(),
           ),
           Provider<SelectorBloc>(
             create: (_) => SelectorBloc(telecomManager: TelecomManager()),
@@ -180,7 +217,7 @@ class MyApp extends StatelessWidget {
               ),
             );
           } else {
-            return BlocBuilder<SettingsBloc, SettingsState>(
+            return BlocBuilder<AccountBloc, AccountState>(
               builder: (context, state) {
                 return Text(
                     "Registration state: ${state.registrationState

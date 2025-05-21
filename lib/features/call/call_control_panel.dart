@@ -1,5 +1,6 @@
 part of 'call.dart';
 
+
 class CallsControlPanel extends StatelessWidget {
 
   const CallsControlPanel({super.key});
@@ -8,6 +9,7 @@ class CallsControlPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CallBloc, CallScreenState>(builder: (context, state) {
       log('call_keyboard: state.calls = ${state.calls}');
+
       return SizedBox(
           width: 320,
           child: Column(
@@ -41,32 +43,23 @@ class CallsControlPanel extends StatelessWidget {
                       ),
                       CallKey(
                           title: 'DTMF',
-                          event: DtmfKeyboardStateChangedEvent(
-                              dtmfKeyboardState: state.dtmfKeyboardState == DtmfKeyboardState.active  ? DtmfKeyboardState.inactive : DtmfKeyboardState.active,
+                          event: CallScreenViewChangedEvent(
+                              callScreenView: state.callScreenView == CallScreenView.dtmf  ? CallScreenView.call : CallScreenView.dtmf,
                               state: state
                           ),
                           style: ThemesMts.callKeyGrey,
                           icon: const Icon(
                             CupertinoIcons.circle_grid_3x3,
                             color: ColorsMts.black,
-                            size: 32,
+                            size:29,
                           ),
                         state: state,
                         context: context,
                       ),
-                      CallKey(
-                          title: 'Speaker',
-                          event: SpeakerScreenEvent(state: state),
-                          style: ThemesMts.callKeyGrey,
-                          icon: Icon(
-                            CupertinoIcons.speaker,
-                            color: state.speaker == true ? ColorsMts.mtsRed : ColorsMts
-                                .black,
-                            size: 32,
-                          ),
-                        state: state,
-                        context: context,
-                      ),
+                      CallKeyAudioRoute(
+                          state: state,
+                          context: context,
+                      )
                     ]
                 ),
                 Row(
@@ -83,10 +76,13 @@ class CallsControlPanel extends StatelessWidget {
                       ),
                       CallKey(
                           title: 'Transfer',
-                          event: TransferButtonClickedEvent(state: state),
+                          event: CallScreenViewChangedEvent(
+                              callScreenView: state.callScreenView == CallScreenView.transfer  ? CallScreenView.call : CallScreenView.transfer,
+                              state: state
+                          ),
                           style: ThemesMts.callKeyGrey,
                           icon: const Icon(
-                            Icons.swap_horiz,
+                            CupertinoIcons.arrow_right_arrow_left,
                             color: ColorsMts.black,
                             size: 32,
                           ),
@@ -228,5 +224,104 @@ class CallKeyDialer extends StatelessWidget {
           ]
         )
     );
+  }
+}
+
+class CallKeyAudioRoute extends StatelessWidget {
+  final CallScreenState state;
+  final BuildContext context;
+
+  const CallKeyAudioRoute({
+    super.key,
+    required this.state,
+    required this.context,
+  });
+
+  String audioRouteIconPath(AudioRoute audioRoute) {
+    switch (audioRoute) {
+      case AudioRoute.earpiece:
+        return 'assets/images/ic_route_earpiece.svg';
+      case AudioRoute.speaker:
+        return 'assets/images/ic_route_speaker.svg';
+      case AudioRoute.headset:
+        return 'assets/images/ic_route_headset.svg';
+      case AudioRoute.headphones:
+        return 'assets/images/ic_route_headphones.svg';
+      case AudioRoute.bluetooth:
+        return 'assets/images/ic_route_bluetooth.svg';
+      case AudioRoute.unknown:
+        return 'assets/images/ic_route_earpiece.svg';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    AudioRouteData? activeAudioRouteData;
+    int activeAudioRouteIndex = 0;
+    int audioRoutesSize = 0;
+    if (state.audioRoutes != null) {
+      audioRoutesSize = state.audioRoutes!.length;
+      final index = state.audioRoutes!
+          .indexWhere((audioRoute) => audioRoute.isActive == true);
+      if (index >= 0) {
+        activeAudioRouteData = state.audioRoutes![index];
+        activeAudioRouteIndex = index;
+      }
+    }
+
+    return Theme(
+        data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent),
+        child: DropdownButton2<String>(
+          value: activeAudioRouteData?.name ?? "",
+          customButton: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 1),
+              height: 100,
+              width: 100,
+              child: Column(children: [
+                OutlinedButton(
+                    onPressed: (audioRoutesSize > 2) ? null : (){
+                      final newIndex = (activeAudioRouteIndex == 1) ? 0 : 1;
+                      context.read<CallBloc>().add(
+                        AudioRouteChangedScreenEvent(state: state, name: state.audioRoutes![newIndex].name));
+                    },
+                    onLongPress: null,
+                    style: ThemesMts.callKeyGrey,
+                    child: SvgPicture.asset(
+                        audioRouteIconPath(
+                            activeAudioRouteData?.route ?? AudioRoute.unknown),
+                        width: 32,
+                        height: 32)),
+                Text(
+                  activeAudioRouteData?.name ?? "",
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    color: ColorsMts.black,
+                    fontFamily: 'mtswide',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                  ),
+                ),
+              ])),
+          underline: Container(),
+          items: (state.audioRoutes ?? []).map((AudioRouteData item) {
+            return DropdownMenuItem<String>(
+              value: item.name,
+              child: Text(
+                item.name,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                ),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              context.read<CallBloc>().add(
+                  AudioRouteChangedScreenEvent(state: state, name: newValue));
+            }
+          },
+        ));
   }
 }

@@ -55,35 +55,35 @@ class CallScreenState {
   List<CallItemState> get calls => List.unmodifiable(_calls);
 
   final String? selectedCallId;
-  final bool speaker;
-  final DtmfKeyboardState dtmfKeyboardState;
+  final List<AudioRouteData>? audioRoutes;
+  final CallScreenView callScreenView;
   final String enteredDtmfSequence;
 
   CallScreenState(
     this._calls, {
     required this.selectedCallId,
-    required this.speaker,
-    required this.dtmfKeyboardState,
+    required this.audioRoutes,
+    required this.callScreenView,
     required this.enteredDtmfSequence,
   });
 
   CallScreenState.copy({
       required this.selectedCallId,
       required CallScreenState copied,
-      bool? speaker,
-      DtmfKeyboardState? dtmfKeyboardState,
+      List<AudioRouteData>? audioRoutes,
+      CallScreenView? callScreenView,
       List<CallItemState>? calls,
       String? enteredDtmfSequence,
     }
-  ) : speaker = speaker ?? copied.speaker,
+  ) : audioRoutes = audioRoutes ?? copied.audioRoutes,
       _calls = calls ?? copied.calls,
-      dtmfKeyboardState = dtmfKeyboardState ?? copied.dtmfKeyboardState,
+      callScreenView = callScreenView ?? copied.callScreenView,
       enteredDtmfSequence = enteredDtmfSequence ?? copied.enteredDtmfSequence {
-        log("CallScreenState.copy: preffered dtmf state = $dtmfKeyboardState, copied = ${copied.dtmfKeyboardState} ");
+        log("CallScreenState.copy: preffered call view state = $callScreenView, copied = ${copied.callScreenView} ");
       }
 
 
 }
 
-enum DtmfKeyboardState{ active, inactive}
+enum CallScreenView{ call, dtmf, transfer}
 

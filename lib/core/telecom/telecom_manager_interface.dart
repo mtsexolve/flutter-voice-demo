@@ -116,7 +116,7 @@ interface class ITelecomManager {
     throw UnimplementedError('unMute() has not been implemented.');
   }
 
-  Future<void> setAudioRoute({required AudioRoute audioRoute}) {
+  Future<void> setAudioRoute({required AudioRouteData audioRouteData}) {
     throw UnimplementedError('setAudioRoute() has not been implemented.');
   }
 

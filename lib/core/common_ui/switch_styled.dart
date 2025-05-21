@@ -13,9 +13,12 @@ class SwitchStyled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Text("$labelText "),
+        Text(
+          "$labelText ",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         Switch.adaptive(
           value: value,
           applyCupertinoTheme: true,

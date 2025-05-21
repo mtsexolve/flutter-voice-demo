@@ -17,7 +17,7 @@ class SettingsRepository {
     final sharedPrefs = await SharedPreferences.getInstance();
     final savedString = sharedPrefs.getString(Keys.settingsPreferencesKey) ?? "";
     log('SettingsRepository: getSettings savedString = $savedString');
-    return savedString.isNotEmpty ? Settings.fromJson(jsonDecode(savedString)) :  const Settings(isRingtoneEnabled: false, isDetectCallLocationEnabled: true);
+    return savedString.isNotEmpty ? Settings.fromJson(jsonDecode(savedString)) :  const Settings(isRingtoneEnabled: false, isDetectLocationEnabled: true);
   }
 
 }

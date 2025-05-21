@@ -17,6 +17,10 @@ class BottomNavigation extends StatelessWidget {
         label: StringsMts.dialerTabLabel,
       ),
       BottomNavigationBarItem(
+        icon: Icon(Icons.account_circle_outlined),
+        label: StringsMts.accountTabLabel,
+      ),
+      BottomNavigationBarItem(
         icon: Icon(Icons.settings),
         label: StringsMts.settingsTabLabel,
       ),

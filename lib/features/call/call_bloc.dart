@@ -24,16 +24,42 @@ class CallBloc extends Bloc<Event, CallScreenState> {
   StreamSubscription<AudioRouteEvent>? _audioRouteEventSubscription;
   Timer? _everySecond;
 
+
   CallBloc({required this.telecomManager})
     : super(CallScreenState(
       [...telecomManager.getCalls().map((element) => CallMapper.toPresenter(mappied: element))],
       selectedCallId: telecomManager.getCalls().first.id,
-      speaker: false,
-      dtmfKeyboardState: DtmfKeyboardState.inactive,
+      audioRoutes: null,
+      callScreenView: CallScreenView.call,
       enteredDtmfSequence: ""
     )) {
+
     on<ScreenEvent>((event, emit) async { event.setEmitter(emit); await event.handle();});
     on<TelecomEvent>((event, emit) {_onTelecomEvent(event.event, emit);});
+
+    var isAudioRoutesFirstAppeared = true;
+
+    on<LoadChangedAudioRoutes>((event, emit) async { 
+      final audioRoutes = await telecomManager.getAudioRoutes();
+
+      if((audioRoutes?.isNotEmpty ?? false) && isAudioRoutesFirstAppeared) {
+        var bluetoohAudioRoutes = audioRoutes!.where((audioRouteData) => audioRouteData.route == AudioRoute.bluetooth);
+        if (bluetoohAudioRoutes.isNotEmpty) {
+          final isBluetoothDisabled = bluetoohAudioRoutes.every((audioRouteData) => audioRouteData.isActive == false);
+          if (isBluetoothDisabled) {
+            TelecomManager().setAudioRoute(audioRouteData: bluetoohAudioRoutes.first);
+          }
+        }
+        isAudioRoutesFirstAppeared = false;
+      }
+
+      emit(CallScreenState.copy(
+          copied: state,
+          selectedCallId: state.selectedCallId,
+          audioRoutes: audioRoutes)
+      );
+    });
+
     _eventSubscription = telecomManager.subscribeOnCallEvents()?.listen((event) {
       add(TelecomEvent(event: event));
     });
@@ -42,17 +68,19 @@ class CallBloc extends Bloc<Event, CallScreenState> {
       if(event is AudioRouteChangedEvent){
         for(var i = 0; i < event.routes.length; i++){
           log('call_bloc: subscribeOnAudioRouteEvents: ${event.routes[i].route} ${event.routes[i].name} ${event.routes[i].isActive}');
-          if(event.routes[i].route == AudioRoute.speaker){
-            if(event.routes[i].isActive != state.speaker){
-              add(SpeakerScreenEvent(state: state));
-            }
-          }
         }
+        add(LoadChangedAudioRoutes());
       }
     });
 
+    add(LoadChangedAudioRoutes());
+
     _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
       add(TimerScreenEvent(state: state));
+
+      if(state.audioRoutes?.isEmpty ?? true) {
+        add(LoadChangedAudioRoutes());
+      }
     });
   }
 
@@ -65,23 +93,19 @@ class CallBloc extends Bloc<Event, CallScreenState> {
           : (event is CallDisconnectedEvent
             ? (event.call.id == state.selectedCallId ? telecomManager.getCalls().lastOrNull?.id : state.selectedCallId)
             : state.selectedCallId),
-        speaker: state.speaker,
+        audioRoutes: state.audioRoutes,
         calls: _updateCallsList(event),
-        dtmfKeyboardState: event is CallNewEvent
-            ? DtmfKeyboardState.inactive
+        callScreenView: event is CallNewEvent
+            ? CallScreenView.call
             : (event is CallDisconnectedEvent
-              ? (event.call.id == state.selectedCallId ? DtmfKeyboardState.inactive : state.dtmfKeyboardState)
-              : state.dtmfKeyboardState),
+              ? (event.call.id == state.selectedCallId ? CallScreenView.call : state.callScreenView)
+              : state.callScreenView),
         enteredDtmfSequence: event is CallNewEvent
             ? ""
             : (event is CallDisconnectedEvent
               ? (event.call.id == state.selectedCallId ? "" : state.enteredDtmfSequence)
               : state.enteredDtmfSequence),
     ));
-    // Fix speaker state on IOS
-    if(Platform.isIOS && (event is CallNewEvent || event is CallConnectedEvent || event is CallOnHoldEvent)){
-      telecomManager.setAudioRoute(audioRoute: state.speaker ? AudioRoute.speaker : AudioRoute.earpiece );
-    }
     log('call_bloc: onTelecomEvent: after emit: state.list =${state.calls} emitter=${emitter.hashCode}');
   }
 

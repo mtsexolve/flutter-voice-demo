@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_voice_example/constants/colors_mts.dart';
 
-import '../../features/settings/settings_bloc.dart';
+import '../../features/account/account_bloc.dart';
 
 class DataField extends StatelessWidget {
   final String name;
@@ -31,7 +31,7 @@ class DataField extends StatelessWidget {
         TextFormField(
           initialValue: text,
           onChanged: (text) {
-            context.read<SettingsBloc>().add(TextFieldChangedEvent(name: name, inputText: text));
+            context.read<AccountBloc>().add(TextFieldChangedEvent(name: name, inputText: text));
           },
           decoration: InputDecoration(
             filled: true,

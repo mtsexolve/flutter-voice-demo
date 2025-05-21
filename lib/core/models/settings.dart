@@ -2,21 +2,21 @@ import 'package:equatable/equatable.dart';
 
 class Settings extends Equatable {
   final bool isRingtoneEnabled;
-  final bool isDetectCallLocationEnabled;
-  const Settings({required this.isRingtoneEnabled, required this.isDetectCallLocationEnabled});
+  final bool isDetectLocationEnabled;
+  const Settings({required this.isRingtoneEnabled, required this.isDetectLocationEnabled});
 
   Settings.fromJson(Map<String, dynamic> json) :
     isRingtoneEnabled = json['isRingtoneEnabled'],
-    isDetectCallLocationEnabled = json['isDetectCallLocationEnabled'];
+    isDetectLocationEnabled = json['isDetectLocationEnabled'];
 
   @override
   List<Object> get props => [
     isRingtoneEnabled,
-    isDetectCallLocationEnabled,
+    isDetectLocationEnabled,
   ];
 
   Map<String, dynamic> toJson() => {
     'isRingtoneEnabled': isRingtoneEnabled,
-    'isDetectCallLocationEnabled': isDetectCallLocationEnabled,
+    'isDetectLocationEnabled': isDetectLocationEnabled,
   };
 }

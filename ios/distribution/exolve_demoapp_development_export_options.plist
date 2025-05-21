@@ -12,7 +12,7 @@
 		<string>exolve_demoapp_development</string>
 	</dict>
 	<key>signingCertificate</key>
-	<string>BD40674DA16A510F97BCCBE9E7C7FD54F9415C56</string>
+	<string>A65EFC326DA35A9EE9C52C04BD00E733489AC0AE</string>
 	<key>signingStyle</key>
 	<string>manual</string>
 	<key>stripSwiftSymbols</key>

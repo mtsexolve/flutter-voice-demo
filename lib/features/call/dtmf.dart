@@ -43,8 +43,8 @@ class Dtmf extends StatelessWidget {
     //    const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () {
-            context.read<CallBloc>().add(DtmfKeyboardStateChangedEvent(
-                state: state, dtmfKeyboardState: DtmfKeyboardState.inactive
+            context.read<CallBloc>().add(CallScreenViewChangedEvent(
+                state: state, callScreenView: CallScreenView.call
             ));
           },
           style: ThemesMts.callKeyGrey,
